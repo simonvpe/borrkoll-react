@@ -13,6 +13,7 @@ import {
   PROJECT_EDIT_CANCEL,
   PROJECT_EDIT_SUBMIT,
   PROJECT_EDIT_RESOLVE,
+  PROJECT_EDIT_UPDATE,
   default as reducer
 } from 'routes/Projects/modules/edit'
 
@@ -39,6 +40,10 @@ describe('(Redux Module) Project edit', () => {
     expect(PROJECT_EDIT_RESOLVE).to.equal('PROJECT_EDIT_RESOLVE')
   })
 
+  it('Should export a constant PROJECT_EDIT_UPDATE.', () => {
+    expect(PROJECT_EDIT_UPDATE).to.equal('PROJECT_EDIT_UPDATE')
+  })
+  
   describe('(Action Creator) actions.start.', () => {
     it('Should be exported as a function.', () => {
       expect(actions.start).to.be.a('function')
@@ -62,6 +67,30 @@ describe('(Redux Module) Project edit', () => {
     })
   })
 
+  describe('(Action Creator) actions.update.', () => {
+    it('Should be exported as a function.', () => {
+      expect(actions.start).to.be.a('function')
+    })
+
+    it('Should return an action with type PROJECT_EDIT_UPDATE.', () => {
+      const project = factory.project()
+      expect(actions.update(project)).to.have.property('type', PROJECT_EDIT_UPDATE)
+    })
+
+    it('Should assign a deep copy of the first argument to the "project" property.', () => {
+      let project = factory.project()
+      let act = actions.update(project)
+      expect(act).to.have.property('project').that.deep.equals(project)
+      expect(act).to.have.property('project').that.not.equals(project)
+    })
+
+    it('Should throw if omitting argument or using wrong type.', () => {
+      expect(() => actions.update()).to.throw('Argument (project) must be an object!')
+      expect(() => actions.update('')).to.throw('Argument (project) must be an object!')
+    })
+  })
+
+  
   describe('(Action Creator) actions.cancel', () => {
     it('Should be exported as a function.', () => {
       expect(actions.cancel).to.be.a('function')
@@ -201,8 +230,42 @@ describe('(Redux Module) Project edit', () => {
         expect(state2).to.have.property('conflict', undefined)
         expect(state2.project).to.deep.equal(project2)
       })
+
+      it('Should throw if omitting project property or if it has the wrong type.', () => {
+        const act1 = { type: PROJECT_EDIT_RESOLVE }
+        const act2 = { type: PROJECT_EDIT_RESOLVE, project: '' }
+        expect(() => reducer({}, act1)).to.throw('Property (project) must be an object!')
+        expect(() => reducer({}, act2)).to.throw('Property (project) must be an object!')
+      })
     })
 
+    describe('(Handler) PROJECT_EDIT_UPDATE', () => {
+      it('Should update the "project" property.', () => {
+        const project1 = factory.project('1')
+        const project2 = factory.project('2')
+
+        const state1 = { project: project1 }
+        const state2 = reducer(state1, { type: PROJECT_EDIT_UPDATE, project: project2 })
+
+        expect(state2.project).to.deep.equal(project2)
+      })
+
+      it('Should throw if omitting project property or if it has the wrong type.', () => {
+        const act1 = { type: PROJECT_EDIT_UPDATE }
+        const act2 = { type: PROJECT_EDIT_UPDATE, project: '' }
+        expect(() => reducer({}, act1)).to.throw('Property (project) must be an object!')
+        expect(() => reducer({}, act2)).to.throw('Property (project) must be an object!')
+      })
+
+      it('Should return the current state if "working" is true.', () => {
+        const project1 = factory.project('1')
+        const project2 = factory.project('1')        
+        const state1 = { working: true, project: project1 }
+        const state2 = reducer(state1, { type: PROJECT_EDIT_UPDATE, project: project2 })
+        expect(state2).to.equal(state1)
+      })      
+    })
+    
     describe('(Handler) PROJECT_UPDATE', () => {
       it('Should return current state if recieved project is not the same as the curently editing one.', () => {
         const project1 = factory.project('1')

@@ -1,4 +1,4 @@
-import update from 'react/lib/update'
+import updateState from 'react/lib/update'
 
 import { PROJECT_INSERT, PROJECT_UPDATE } from './projects'
 
@@ -6,6 +6,7 @@ export const PROJECT_EDIT_START = 'PROJECT_EDIT_START'
 export const PROJECT_EDIT_CANCEL = 'PROJECT_EDIT_CANCEL'
 export const PROJECT_EDIT_SUBMIT = 'PROJECT_EDIT_SUBMIT'
 export const PROJECT_EDIT_RESOLVE = 'PROJECT_EDIT_RESOLVE'
+export const PROJECT_EDIT_UPDATE = 'PROJECT_EDIT_UPDATE'
 
 export function resolve (project) {
   if (project === undefined || typeof project !== 'object') {
@@ -23,6 +24,16 @@ export function start (project) {
   }
   return {
     type: PROJECT_EDIT_START,
+    project: Object.assign({}, project)
+  }
+}
+
+export function update (project) {
+  if (project === undefined || typeof project !== 'object') {
+    throw new Error('Argument (project) must be an object!')
+  }
+  return {
+    type: PROJECT_EDIT_UPDATE,
     project: Object.assign({}, project)
   }
 }
@@ -47,6 +58,7 @@ export function submit () {
 export const actions = {
   resolve,
   start,
+  update,
   cancel,
   submit
 }
@@ -57,22 +69,35 @@ const ACTION_HANDLERS = {
     if (action.project === undefined || typeof action.project != 'object') {
       throw new Error('Property (project) must be an object!')
     }
-    return update(state, {
+    return updateState(state, {
       project: { $set: Object.assign({}, action.project) },
       working: { $set: false }
     })
   },
 
   [PROJECT_EDIT_CANCEL]: (state, action) => {
-    return update(state, {
+    return updateState(state, {
       project: { $set: undefined },
       working: { $set: false }
     })
   },
 
   [PROJECT_EDIT_SUBMIT]: (state, action) => {
-    return update(state, {
+    return updateState(state, {
       working: { $set: true }
+    })
+  },
+
+  [PROJECT_EDIT_UPDATE]: (state, action) => {
+    if (action.project === undefined || typeof action.project !== 'object') {
+      throw new Error('Property (project) must be an object!')
+    }
+    if (state.working) {
+      return state
+    }
+
+    return updateState(state, {
+      project: { $set: Object.assign({}, action.project) }
     })
   },
 
@@ -83,7 +108,7 @@ const ACTION_HANDLERS = {
     if (!state.project) return state
     if (state.project._id !== action.project._id) return state
 
-    return update(state, {
+    return updateState(state, {
       // Our project was updated successfully so
       //   clear the working flag
       working: { $set: false },
@@ -97,7 +122,10 @@ const ACTION_HANDLERS = {
   },
 
   [PROJECT_EDIT_RESOLVE]: (state, action) => {
-    return update(state, {
+    if (action.project === undefined || typeof action.project !== 'object') {
+      throw new Error('Property (project) must be an object!')
+    }
+    return updateState(state, {
       project: { $set: action.project },
       conflict: { $set: undefined }
     })

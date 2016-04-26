@@ -6,7 +6,7 @@ import logger from './logger'
 import PouchDB from 'pouchdb';
 import PouchMiddleware from 'vendor/pouch-redux-middleware'
 
-import { PROJECT_DELETE, PROJECT_INSERT, PROJECT_UPDATE } from 'routes/Projects/modules/projects'
+import { PROJECT_REMOVE, PROJECT_INSERT, PROJECT_UPDATE } from 'routes/Projects/modules/projects'
 
 export default (initialState = {}, history) => {
   PouchDB.debug.enable('*')
@@ -16,7 +16,7 @@ export default (initialState = {}, history) => {
     path: '/projects/projects',
     db,
     actions: {
-      remove: (doc) => store.dispatch({ type: PROJECT_DELETE, id: doc._id }),
+      remove: (doc) => store.dispatch({ type: PROJECT_REMOVE, id: doc._id }),
       insert: (doc) => store.dispatch({ type: PROJECT_INSERT, project: doc }),
       update: (doc) => store.dispatch({ type: PROJECT_UPDATE, project: doc })
     }
