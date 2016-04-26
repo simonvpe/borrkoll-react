@@ -20,20 +20,36 @@ const mapActionCreators = {
   //  doubleAsync
   insertProject: (project) => projectsActions.insert(project),
   updateProject: (project) => projectsActions.update(project),
-  deleteProject: (id) => projectsActions.remove(id),
-  startEditingProject: (project) => editProjectActions.start(project),
-  cancelEditingProject: () => editProjectActions.cancel()
+  removeProject: (id) => projectsActions.remove(id),
+  editProjectStart: (project) => editProjectActions.start(project),
+  editProjectCancel: () => editProjectActions.cancel(),
+  editProjectSubmit: () => editProjectActions.submit(),
+  editProjectResolve: (project) => editProjectActions.resolve(project),
+  editProjectUpdate: (project) => editProjectActions.update(project)
 }
 
 const mapStateToProps = (state) => {
   return {
     projects: state.projects.projects,
-    editProject: state.editProject.project,
-    createProject: () => factory.project(),
-    createHole: () => factory.hole(),
-    createNote: () => factory.note()
+    editProject: state.editProject
   }
 }
+
+const mergeProps = (stateProps, dispatchProps, ownProps) => ({
+  projects: stateProps.projects,
+  insert: dispatchProps.insertProject,
+  update: dispatchProps.updateProject,
+  remove: dispatchProps.removeProject,
+  edit: Object.assign({}, stateProps.editProject, {
+    actions: {
+      start: dispatchProps.editProjectStart,
+      cancel: dispatchProps.editProjectCancel,
+      submit: dispatchProps.editProjectSubmit,
+      resolve: dispatchProps.editProjectResolve,
+      update: dispatchProps.editProjectUpdate
+    }
+  })
+})
 
 /*  Note: mapStateToProps is where you should use `reselect` to create selectors, ie:
 
@@ -49,4 +65,4 @@ const mapStateToProps = (state) => {
     Selectors are composable. They can be used as input to other selectors.
     https://github.com/reactjs/reselect    */
 
-export default connect(mapStateToProps, mapActionCreators)(Projects)
+export default connect(mapStateToProps, mapActionCreators, mergeProps)(Projects)
