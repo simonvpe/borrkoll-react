@@ -12,6 +12,7 @@ import {
   PROJECT_EDIT_START,
   PROJECT_EDIT_CANCEL,
   PROJECT_EDIT_SUBMIT,
+  PROJECT_EDIT_RESOLVE,
   default as reducer
 } from 'routes/Projects/modules/edit'
 
@@ -25,13 +26,17 @@ describe('(Redux Module) Project edit', () => {
   it('Should export a constant PROJECT_EDIT_START.', () => {
     expect(PROJECT_EDIT_START).to.equal('PROJECT_EDIT_START')
   })
-  
+
   it('Should export a constant PROJECT_EDIT_CANCEL.', () => {
     expect(PROJECT_EDIT_CANCEL).to.equal('PROJECT_EDIT_CANCEL')
   })
-  
-  it('Should export a constant PROJECT_EDIT_UPDATE.', () => {
-    expect(PROJECT_EDIT_UPDATE).to.equal('PROJECT_EDIT_UPDATE')
+
+  it('Should export a constant PROJECT_EDIT_SUBMIT.', () => {
+    expect(PROJECT_EDIT_SUBMIT).to.equal('PROJECT_EDIT_SUBMIT')
+  })
+
+  it('Should export a constant PROJECT_EDIT_RESOLVE.', () => {
+    expect(PROJECT_EDIT_RESOLVE).to.equal('PROJECT_EDIT_RESOLVE')
   })
 
   describe('(Action Creator) actions.start.', () => {
@@ -40,7 +45,8 @@ describe('(Redux Module) Project edit', () => {
     })
 
     it('Should return an action with type PROJECT_EDIT_START.', () => {
-      expect(actions.start()).to.have.property('type', PROJECT_EDIT_START)
+      const project = factory.project()
+      expect(actions.start(project)).to.have.property('type', PROJECT_EDIT_START)
     })
 
     it('Should assign a deep copy of the first argument to the "project" property.', () => {
@@ -66,13 +72,51 @@ describe('(Redux Module) Project edit', () => {
     })
   })
 
+  describe('(Action Creator) actions.resolve', () => {
+    it('Should be exported as a function.', () => {
+      expect(actions.resolve).to.be.a('function')
+    })
+
+    it('Should return an action with type PROJECT_EDIT_RESOLVE.', () => {
+      const project = factory.project()
+      expect(actions.resolve(project)).to.have.property('type', PROJECT_EDIT_RESOLVE)
+    })
+
+    it('Should throw if omitting "project" property or if it has the wrong type.', () => {
+      const act1 = { type: PROJECT_EDIT_RESOLVE }
+      const act2 = { type: PROJECT_EDIT_RESOLVE, project: '' }
+      expect(() => actions.resolve()).to.throw('Argument (project) must be an object!')
+      expect(() => actions.resolve()).to.throw('Argument (project) must be an object!')
+    })
+  })
+
   describe('(Action Creator) actions.submit', () => {
     it('Should be exported as a function.', () => {
       expect(actions.submit).to.be.a('function')
     })
 
-    it('Should return an action with type PROJECT_EDIT_SUBMIT.', () => {
-      expect(actions.submit()).to.have.property('type', PROJECT_EDIT_SUBMIT)
+    it('Should return a funcion (thunk)', () => {
+      expect(actions.submit()).to.be.a('function')
+    })
+
+    it('Should dispatch actions PROJECT_EDIT_SUBMIT and PROJECT_INSERT.', () => {
+      const project = factory.project()
+      const store = mockStore({ project, working: false })
+      const act = actions.submit()
+
+      const expectedActions = [
+        { type: PROJECT_EDIT_SUBMIT },
+        { type: PROJECT_INSERT, project }
+      ]
+
+      store.dispatch(act)
+      expect(store.getActions()).to.deep.equal(expectedActions)
+    })
+
+    it('Should throw if property "project" is not an object.', () => {
+      const store = mockStore({})
+      const act = actions.submit()
+      expect(() => store.dispatch(act)).to.throw('Trying to submit with bad property "project"')
     })
   })
 
@@ -83,9 +127,9 @@ describe('(Redux Module) Project edit', () => {
 
     it('Should initialize a state.', () => {
       let state = reducer(undefined, {})
-      expect(state.project).to.have.property('project', undefined)
-      expect(state.project).to.have.property('working', false)
-      expect(state.project).to.have.property('error', undefined)
+      expect(state).to.have.property('project', undefined)
+      expect(state).to.have.property('working', false)
+      expect(state).to.have.property('error', undefined)
     })
 
     it('Should return previous state if an action was not matched.', () => {
@@ -97,81 +141,128 @@ describe('(Redux Module) Project edit', () => {
     describe('(Handler) PROJECT_EDIT_START', () => {
       it('Should assign a deep copy of the given project to the "project" property.', () => {
         const project = factory.project()
-        const state = reducer(undefined, actions.start(project))
+        const state = reducer(undefined, { type: PROJECT_EDIT_START, project })
         expect(state).to.have.property('project').that.deep.equals(project)
         expect(state).to.have.property('project').that.not.equals(project)
       })
 
       it('Should set the "working" property to false.', () => {
         const project = factory.project()
-        const store = mockStore({ project, working: true })
-        mockStore.dispatch(actions.cancel())
-        expect(store.getState()).to.have.property('working', false)
+        const state = reducer({ working: true }, { type: PROJECT_EDIT_START, project })
+        expect(state).to.have.property('working', false)
       })
 
+      it('Should throw if omitting project property or if it has the wrong type.', () => {
+        const act1 = { type: PROJECT_EDIT_START }
+        const act2 = { type: PROJECT_EDIT_START, project: '' }
+        expect(() => reducer(undefined, act1)).to.throw('Property (project) must be an object!')
+        expect(() => reducer(undefined, act2)).to.throw('Property (project) must be an object!')
+      })
     })
 
     describe('(Handler) PROJECT_EDIT_CANCEL', () => {
       it('Should set the "project" property to undefined.', () => {
         const project = factory.project()
-        const store = mockStore({ project, working: false })
-        mockStore.dispatch(actions.cancel())
-        expect(store.getState()).to.have.property('project', undefined)
+        const state = reducer({ project, working: false }, { type: PROJECT_EDIT_CANCEL })
+        expect(state).to.have.property('project', undefined)
       })
 
       it('Should set the "working" property to false.', () => {
         const project = factory.project()
-        const store = mockStore({ project, working: true })
-        mockStore.dispatch(actions.cancel())
-        expect(store.getState()).to.have.property('working', false)
+        const state = reducer({ project, working: true }, { type: PROJECT_EDIT_CANCEL })
+        expect(state).to.have.property('working', false)
       })
     })
 
     describe('(Handler) PROJECT_EDIT_SUBMIT', () => {
       it('Should set the "working" property to true.', () => {
-        const project = factory.project()
-        const state1 = reducer(undefined, actions.start(project))
-        expect(state1).to.have.property('working', false)
-        const state2 = reducer(state1, actions.start(project))
-        expect(state2).to.have.property('working', true)
+        const state1 = reducer({}, { type: PROJECT_EDIT_SUBMIT })
+        expect(state1).to.have.property('working', true)
+      })
+    })
+
+    describe('(Handler) PROJECT_EDIT_RESOLVE', () => {
+      it('Should clear the "conflict" property.', () => {
+        const project1 = factory.project('1')
+        const project2 = factory.project('2')
+
+        const state1 = { conflict: project1 }
+        const state2 = reducer(state1, { type: PROJECT_EDIT_RESOLVE, project: project2 })
+        expect(state2).to.have.property('conflict', undefined)
       })
 
-      it('Should dispatch an PROJECT_INSERT action.', () => {
-        const project = factory.project()
-        const store = mockStore({ project, working: false })
-        const act = actions.submit()
+      it('Should update the "project" property.', () => {
+        const project1 = factory.project('1')
+        const project2 = factory.project('2')
 
-        const expectedActions = [
-          act,
-          { type: PROJECT_INSERT, project }
-        ]
-        store.dispatch(act)
-        expect(store.getActions()).to.deep.equal(expectedActions)
+        const state1 = { conflict: project2, project: project1 }
+        const state2 = reducer(state1, { type: PROJECT_EDIT_RESOLVE, project: project2 })
+
+        expect(state2).to.have.property('conflict', undefined)
+        expect(state2.project).to.deep.equal(project2)
       })
     })
 
     describe('(Handler) PROJECT_UPDATE', () => {
-      it('Should reset the "working" property if updated project is the same as the submitted one.', () => {
-        const project1 = factory.project()
-        const project2 = factory.project()
-        const store = mockStore({ project2, working: true })
+      it('Should return current state if recieved project is not the same as the curently editing one.', () => {
+        const project1 = factory.project('1')
+        const project2 = factory.project('2')
+
+        const state1 = { project: project1 }
+        const state2 = reducer(state1, { type: PROJECT_UPDATE, project: project2 })
         
-        store.dispatch({ type: PROJECT_UPDATE, project: project1 })
-        expect(store.getState()).to.have.property('working', true)
-        store.dispatch({ type: PROJECT_UPDATE, project: project2 })
-        expect(store.getState()).to.have.property('working', falsep)        
+        expect(state1).to.equal(state2)
       })
       
-      it('Should set the "project" property to undefined if updated project is the same as the submitted one.', () => {
-        const project1 = factory.project()
-        const project2 = factory.project()
-        const store = mockStore({ project2, working: true })
-        
-        store.dispatch({ type: PROJECT_UPDATE, project: project1 })
-        expect(store.getState()).to.have.property('project').that.deep.equals(project2)
-        store.dispatch({ type: PROJECT_UPDATE, project: project2 })
-        expect(store.getState()).to.have.property('project', undefined)
+      it('Should reset the "working" property.', () => {
+        const project1 = factory.project('1')
+        const project2 = factory.project('2')
+
+        const state1 = reducer({ project: project1, working: true, conflict: undefined }, {
+          type: PROJECT_UPDATE,
+          project: project2
+        })
+        expect(state1).to.have.property('working', true)
+        expect(state1).to.have.property('conflict', undefined)
+        const state2 = reducer(state1, {
+          type: PROJECT_UPDATE,
+          project: project1
+        })
+        expect(state2).to.have.property('working', false)
+        expect(state2).to.have.property('conflict', undefined)
       })
+
+      it('Should copy the recieved project to the "conflict" property if editing a project.', () => {
+        const project1a = factory.project('1')
+        const project1b = Object.assign(project1a, { completed: true })
+
+        const state = reducer({ project: project1a, working: false }, {
+          type: PROJECT_UPDATE,
+          project: project1b
+        })
+
+        expect(state).to.have.property('working', false)
+        expect(state.conflict).to.deep.equal(project1b)
+      })
+
+      it('Should set the "project" property to undefined if "working" is true.', () => {
+        const project = factory.project()
+        const store = mockStore({ project, working: true })
+
+        const state1 = reducer({ project, working: true }, { type: PROJECT_UPDATE, project: project })
+        expect(state1).to.have.property('project', undefined)
+
+        const state2 = reducer({ project, working: false }, { type: PROJECT_UPDATE, project: project })
+        expect(state2).to.have.property('project').that.deep.equals(project)
+      })
+
+      it('Should throw if omitting project property or if it has the wrong type.', () => {
+        const act1 = { type: PROJECT_UPDATE }
+        const act2 = { type: PROJECT_UPDATE, project: '' }
+        expect(() => reducer(undefined, act1)).to.throw('Property (project) must be an object!')
+        expect(() => reducer(undefined, act2)).to.throw('Property (project) must be an object!')
+      })
+
     })
   })
 })

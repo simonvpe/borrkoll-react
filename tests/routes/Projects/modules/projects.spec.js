@@ -138,6 +138,13 @@ describe('(Redux Module) Projects', () => {
         expect(state.projects[0]).to.deep.equal(project)
         expect(state.projects[0]).to.not.equal(project)
       })
+
+      it('Should throw if omitting project property or if it has the wrong type.', () => {
+        const act1 = { type: PROJECT_INSERT }
+        const act2 = { type: PROJECT_INSERT, project: '' }
+        expect(() => projectsReducer(undefined, act1)).to.throw('Property (project) must be an object!')
+        expect(() => projectsReducer(undefined, act2)).to.throw('Property (project) must be an object!')
+      })
     })
 
     describe('(Handler) PROJECT_UPDATE', () => {
@@ -165,9 +172,16 @@ describe('(Redux Module) Projects', () => {
         expect(state.projects[3]).to.deep.equal(project3)
         expect(state.projects[3]).to.not.equal(project3)
       })
+
+      it('Should throw if omitting project property or if it has the wrong type.', () => {
+        const act1 = { type: PROJECT_UPDATE }
+        const act2 = { type: PROJECT_UPDATE, project: '' }
+        expect(() => projectsReducer(undefined, act1)).to.throw('Property (project) must be an object!')
+        expect(() => projectsReducer(undefined, act2)).to.throw('Property (project) must be an object!')
+      })
     })
 
-    describe('(Handler) PROJECT_DELETE', () => {
+    describe('(Handler) PROJECT_REMOVE', () => {
       it('Should delete the correct project with respect to its id.', () => {
         let i = 0
         let state = projectsReducer(undefined, actions.insert(factory.project(i++)))
@@ -188,6 +202,13 @@ describe('(Redux Module) Projects', () => {
 
         state = projectsReducer(state, actions.remove('2'))
         expect(state.projects.map((p) => p._id)).to.have.length('0')
+      })
+
+      it('Should throw if omitting project property or if it has the wrong type.', () => {
+        const act1 = { type: PROJECT_REMOVE }
+        const act2 = { type: PROJECT_REMOVE, id: 12 }
+        expect(() => projectsReducer(undefined, act1)).to.throw('Property (id) must be a string!')
+        expect(() => projectsReducer(undefined, act2)).to.throw('Property (id) must be a string!')
       })
     })
   })

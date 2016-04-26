@@ -56,6 +56,9 @@ export const actions = {
 const ACTION_HANDLERS = {
 
   [PROJECT_INSERT]: (state, action) => {
+    if (action.project === undefined || typeof action.project !== 'object') {
+      throw new Error('Property (project) must be an object!')
+    }
     return updateState(state, {
       projects: {
         $unshift: [action.project]
@@ -64,6 +67,9 @@ const ACTION_HANDLERS = {
   },
 
   [PROJECT_UPDATE]: (state, action) => {
+    if (action.project === undefined || typeof action.project !== 'object') {
+      throw new Error('Property (project) must be an object!')
+    }
     return updateState(state, {
       projects: {
         $set: state.projects.map(
@@ -76,6 +82,9 @@ const ACTION_HANDLERS = {
   },
 
   [PROJECT_REMOVE]: (state, action) => {
+    if (action.id === undefined || typeof action.id !== 'string') {
+      throw new Error('Property (id) must be a string!')
+    }
     return updateState(state, {
       projects: {
         $set: state.projects.filter((p) => p._id !== action.id)
