@@ -5,16 +5,17 @@ export default (store) => ({
   getComponent (nextState, next) {
     require.ensure([
       './containers/ProjectsContainer',
-      './modules/projects'
+      './modules/factory',
+      './modules/projects',
+      './modules/edit'
     ], (require) => {
   /*  These modules are lazily evaluated using require hook, and
       will not loaded until the router invokes this callback. */
-      const Counter = require('./containers/ProjectsContainer').default
-      const reducer = require('./modules/projects').default
+      const Projects = require('./containers/ProjectsContainer').default
+      injectReducer(store, { key: 'projects', reducer: require('./modules/projects').default })
+      injectReducer(store, { key: 'editProject', reducer: require('./modules/edit').default })
 
-      injectReducer(store, { key: 'projects', reducer })
-
-      next(null, Counter)
+      next(null, Projects)
     })
   }
 })

@@ -1,15 +1,8 @@
 import { connect } from 'react-redux'
 
-import {
-  insertProject,
-  updateProject,
-  deleteProject,
-  startEditingProject,
-  cancelEditingProject,
-  createHole,
-  createNote,
-  createProject
-} from 'routes/Projects/modules/projects'
+import { actions as projectsActions } from 'routes/Projects/modules/projects'
+import { actions as editProjectActions } from 'routes/Projects/modules/edit'
+import { factory } from 'routes/Projects/modules/factory'
 
 /*  This is a container component. Notice it does not contain any JSX,
     nor does it import React. This component is **only** responsible for
@@ -25,20 +18,22 @@ import Projects from 'components/Projects'
 const mapActionCreators = {
 //  increment: () => increment(1),
   //  doubleAsync
-  insertProject: (project) => insertProject(project),
-  updateProject: (project) => updateProject(project),
-  deleteProject: (id) => deleteProject(id),
-  startEditingProject: (project) => startEditingProject(project),
-  cancelEditingProject: () => cancelEditingProject()
+  insertProject: (project) => projectsActions.insert(project),
+  updateProject: (project) => projectsActions.update(project),
+  deleteProject: (id) => projectsActions.remove(id),
+  startEditingProject: (project) => editProjectActions.start(project),
+  cancelEditingProject: () => editProjectActions.cancel()
 }
 
-const mapStateToProps = (state) => ({
-  projects: state.projects.projects,
-  editProject: state.projects.editProject,
-  createProject: () => createProject(),
-  createHole: () => createHole(),
-  createNote: () => createNote()
-})
+const mapStateToProps = (state) => {
+  return {
+    projects: state.projects.projects,
+    editProject: state.editProject.project,
+    createProject: () => factory.project(),
+    createHole: () => factory.hole(),
+    createNote: () => factory.note()
+  }
+}
 
 /*  Note: mapStateToProps is where you should use `reselect` to create selectors, ie:
 

@@ -52,7 +52,7 @@ export class Projects extends React.Component {
         />
       )
     }
-    
+
     return (
       <div>
         <ProjectListToolbar createCallback={this.startEditing}/>
