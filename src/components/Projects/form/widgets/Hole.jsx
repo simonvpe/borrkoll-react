@@ -36,7 +36,7 @@ export class Hole extends React.Component {
   }
 
   handleDepthChanged = (event) => {
-    this.setState({ depth: event.target.value },
+    this.setState({ depth: parseInt(event.target.value)},
                   () => this.props.callback(this.state))
   }
 

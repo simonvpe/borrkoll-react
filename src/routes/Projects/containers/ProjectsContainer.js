@@ -37,18 +37,25 @@ const mapStateToProps = (state) => {
 
 const mergeProps = (stateProps, dispatchProps, ownProps) => ({
   projects: stateProps.projects,
-  insert: dispatchProps.insertProject,
-  update: dispatchProps.updateProject,
-  remove: dispatchProps.removeProject,
+  actions: {
+    insert: dispatchProps.insertProject,
+    update: dispatchProps.updateProject,
+    remove: dispatchProps.removeProject,
+  },
   edit: Object.assign({}, stateProps.editProject, {
     actions: {
-      start: dispatchProps.editProjectStart,
+      start: () => dispatchProps.editProjectStart(factory.project()),
       cancel: dispatchProps.editProjectCancel,
       submit: dispatchProps.editProjectSubmit,
       resolve: dispatchProps.editProjectResolve,
       update: dispatchProps.editProjectUpdate
     }
-  })
+  }),
+  factory: {
+    project: factory.project,
+    hole: factory.hole,
+    note: factory.note
+  }
 })
 
 /*  Note: mapStateToProps is where you should use `reselect` to create selectors, ie:

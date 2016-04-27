@@ -46,10 +46,11 @@ export function cancel () {
 
 export function submit () {
   return (dispatch, getState) => {
-    if (typeof getState().project !== 'object') {
+    const state = getState().editProject // <== TODO: FIX THIS UGLYNESS!
+    if (!state || typeof state.project !== 'object') {
       throw new Error('Trying to submit with bad property "project"')
     }
-    let project = Object.assign({}, getState().project)
+    let project = Object.assign({}, state.project)
     dispatch({ type: PROJECT_EDIT_SUBMIT })
     dispatch({ type: PROJECT_INSERT, project: project })
   }
