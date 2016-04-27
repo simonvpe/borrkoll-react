@@ -1,0 +1,213 @@
+{
+    "ProjectsContainer": {
+	"in": {
+	    "projects: []": "projects",
+	    "actions": {
+		"insert: function(project)": "actions.insert",
+		"update: function(project)": "actions.update",
+		"remove: function(id)": "actions.remove"
+	    },
+	    "factory": {
+		"project: function()": "factory.project",
+		"hole: function()": "factory.hole",
+		"note: function()": "factory.note"
+	    }
+	},
+	"out": {
+	    "projects: []": "projects",
+	    "onRemove: function(project)": "(project) => () => actions.remove(project._id)",
+	    "setNotes: function(project)": "(project) => (notes) => actions.update( React.update(project, { notes: { $set: notes } }) )",
+	    "setCompleted: function(completed)": "(project) => (completed) => actions.update( ..."
+	},
+	"Toolbar": {
+	    "in": {
+		"onAddProject": "edit.actions.add"
+	    }
+	},
+	"ProjectListHeader": {
+	},
+	"ProjectListItem[i]": {
+	    "in": {
+		"project: []": "projects[i]",
+		"onRemove: function()": "remove(projects[i])",
+		"setNotes: function(notes)": "setNotes(projects[i])",
+		"setCompleted: function(completed)": "setCompleted(projects[i])"
+	    },
+	    "checkbox": {
+		"in": {
+		    "onValueChanged": "setCompleted(value)"
+		}
+	    },
+	    "NotesContainer": {
+		"in": {
+		    "notes: []": "",
+		    "onUpdate: function(notes)": "setNotes"
+		},
+		"out": {
+		    "notes: []": "notes",
+		    "onAdd": "(text) => onUpdate(notes.concat(Object.assign(factory.note(), { text })))",
+		    "onUpdate: function(idx)": "(idx) => (note) => onUpdate( React.update( ... ) )",
+		    "onRemove: function(idx)": "(idx) => () => onUpdate( React.update( ... ) )"
+		},
+		"Notes": {
+		    "in": {
+			"notes: []": "notes",
+			"onAdd: function(text)": "onAdd",
+			"onUpdate: function(idx)": "onUpdate",
+			"onRemove": "onRemove"
+		    },
+		    "Note[i]": {
+			"in": {
+			    "key": "i",
+			    "note: note": "notes[i]",
+			    "onUpdate: function(note)": "onUpdate(i)",
+			    "onRemove: function()": "onRemove(i)"
+			}
+		    },
+		    "textarea": {
+		    },
+		    "Button": {
+			"in": {
+			    "onClick": "submit"
+			}
+		    }
+		}
+	    }
+	    
+	},
+	"ProjectFormContainer": {
+	    "in": {
+		"edit": {
+		    "project": "edit.project",
+		    "conflict": "edit.conflict",
+		    "error": "edit.error",
+		    "working": "edit.working",
+		    "actions": {
+			"start": "edit.actions.start",
+			"cancel": "edit.actions.cancel",
+			"submit": "edit.actions.submit",
+			"resolve": "edit.actions.resolve",
+			"update": "edit.actions.update"
+		    }
+		}
+	    },
+	    "out": {
+		"onSubmit": "edit.actions.submit",
+		"setCustomer": "(customer) => onUpdate( React.update(project, { customer: { $set: customer } }) )",
+		"setSite": "(site) => onUpdate( React.update(project, { site: { $set: site } }) )",
+		"setNotes": "(notes) => onUpdate( React.update(project, { notes: { $set: notes } }) )",
+		"setHoles": "(holes) => onUpdate( React.update(project, { holes: { $set: holes } }) )",
+		"setCompleted": "(completed) => onUpdate( React.update(project, { completed: { $set: completed } }) )"
+	    },
+	    "ProjectForm": {
+		"in": "{...props}",
+		"Header": {
+		    "in": {
+			"conflict": "conflict",
+			"error": ""
+		    }
+		},
+		"Customer": {
+		    "in": {
+			"customer: {}": "project.customer",
+			"onUpdate: function(customer)": "setCustomer"
+		    }
+		},
+		"Site": {
+		    "in": {
+			"site: {}": "project.site",
+			"onUpdate: function(site)": "setSite"
+		    }
+		},
+		"HolesContainer": {
+		    "in": {
+			"holes: []": "project.holes",
+			"onUpdate: function(holes)": "setHoles"
+		    },
+		    "out": {
+			"holes: []": "holes",
+			"onAdd: function()": "() => onUpdate( holes.concat(factory.hole() )",
+			"onUpdate: function(idx)": "(idx) => (hole) => onUpdate( React.update( ... ) )",
+			"onRemove: function(idx)": "(idx) => () => onUpdate( React.update( ... ) )",
+			"setNotes: function(idx)": "(idx) => (notes) => onUpdate( React.update( ... ) )"
+		    },
+		    "Holes": {
+			"in": {
+			    "holes: []": "holes",
+			    "onAdd: function()": "onAdd",
+			    "onUpdate: function(idx)": "onUpdate",
+			    "onRemove: function(idx)": "onRemove",
+			    "setNotes: function(idx)": "setNotes"
+			},
+			"Hole[i]": {
+			    "in": {
+				"key": "i",
+				"hole: hole": "holes[i]",
+				"onUpdate: function(hole)": "onUpdate(i)",
+				"onRemove: function()": "onRemove(i)",
+				"setNotes: function(notes)": "setNotes(i)"
+			    },
+			    "NotesContainer": {
+				"in": {
+				    "notes: []": "hole.notes",
+				    "onUpdate: function(notes)": "setNotes"
+				},
+				"out": {
+				    "notes: []": "notes",
+				    "onAdd": "(text) => onUpdate(notes.concat(Object.assign(factory.note(), { text })))",
+				    "onUpdate: function(idx)": "(idx) => (note) => onUpdate( React.update( ... ) )",
+				    "onRemove: function(idx)": "(idx) => () => onUpdate( React.update( ... ) )"
+				},
+				"Notes": {
+				    "in": {
+					"notes: []": "notes",
+					"onAdd: function(text)": "onAdd",
+					"onUpdate: function(idx)": "onUpdate",
+					"onRemove": "onRemove"
+				    },
+				    "Note[i]": {
+					"in": {
+					    "key": "i",
+					    "note: note": "notes[i]",
+					    "onUpdate: function(note)": "onUpdate(i)",
+					    "onRemove: function()": "onRemove(i)"
+					}
+				    },
+				    "textarea": {
+				    },
+				    "Button": {
+					"in": {
+					    "onClick": "submit"
+					}
+				    }
+				}
+				
+			    }
+			}
+		    }
+		},
+		"FinishContainer": {
+		    "in": {
+			"project: {}": "project",
+			"onUpdate: function(project)": "onUpdate",
+			"onSubmit: function()": "onSubmit"
+		    },
+		    "out": {
+			"project: {}": "project",
+			"onSubmit: function()": "onSubmit",
+			"setNotes": "(notes) => onUpdate( React.update(project, { notes: { $set: notes } }) )"
+		    },
+		    "Finish": {
+			"in": {
+			    "project: {}": "project",
+			    "onSubmit: function()": "onSubmit",
+			    "setNotes: function(notes)": "setNotes"
+			},
+			"NotesContainer": { "notes": "project.notes", "onUpdate": "setNotes" },
+			"Button": { "onClick": "onSubmit" }
+		    }
+		}
+	    }
+	}
+    }
+}
