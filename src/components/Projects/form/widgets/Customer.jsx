@@ -1,14 +1,14 @@
 import React, { PropTypes } from 'react'
+import update from 'react/lib/update'
 
 import Form from 'react-bootstrap/lib/Form'
 import FormGroup from 'react-bootstrap/lib/FormGroup'
 import FormControl from 'react-bootstrap/lib/FormControl'
-import Col from 'react-bootstrap/lib/Col'
 import ControlLabel from 'react-bootstrap/lib/ControlLabel'
 
 type Props = {
   customer: {},
-  callback: Function
+  onUpdate: Function
 }
 
 export class Customer extends React.Component {
@@ -16,43 +16,49 @@ export class Customer extends React.Component {
 
   static propTypes = {
     customer: PropTypes.object.isRequired,
-    callback: PropTypes.func.isRequired
+    onUpdate: PropTypes.func.isRequired
   }
 
-  componentWillMount() {
-    this.setState(this.props.customer)
+  onUpdateFirstName = (event) => {
+    const customer = update(this.props.customer, {
+      firstName: { $set: event.target.value }
+    })
+    this.props.onUpdate(customer)
   }
 
-  handleChange = () => this.props.callback(this.state)
-  
-  handleFirstNameChanged = (event) => {
-    this.setState({ firstName: event.target.value },
-                  this.handleChange)
+  onUpdateLastName = (event) => {
+    const customer = update(this.props.customer, {
+      lastName: { $set: event.target.value }
+    })
+    this.props.onUpdate(customer)
   }
 
-  handleLastNameChanged = (event) => {
-    this.setState({ lastName: event.target.value },
-                  this.handleChange)
+  onUpdateStreet = (event) => {
+    const customer = update(this.props.customer, {
+      street: { $set: event.target.value }
+    })
+    this.props.onUpdate(customer)
   }
 
-  handleStreetChanged = (event) => {
-    this.setState({ street: event.target.value },
-                  this.handleChange)
+  onUpdateCity = (event) => {
+    const customer = update(this.props.customer, {
+      city: { $set: event.target.value }
+    })
+    this.props.onUpdate(customer)
   }
 
-  handleCityChanged = (event) => {
-    this.setState({ city: event.target.value },
-                  this.handleChange)
+  onUpdateZipCode = (event) => {
+    const customer = update(this.props.customer, {
+      zipCode: { $set: event.target.value }
+    })
+    this.props.onUpdate(customer)
   }
 
-  handleZipCodeChanged = (event) => {
-    this.setState({ zipCode: event.target.value },
-                  this.handleChange)
-  }
-
-  handleCountryChanged = (event) => {
-    this.setState({ country: event.target.value },
-                  this.handleChange)
+  onUpdateCountry = (event) => {
+    const customer = update(this.props.customer, {
+      country: { $set: event.target.value }
+    })
+    this.props.onUpdate(customer)
   }
 
   render = () => (
@@ -61,8 +67,8 @@ export class Customer extends React.Component {
         <ControlLabel>First name</ControlLabel>
         <FormControl type='text'
                      placeholder='First name'
-                     onChange={this.handleFirstNameChanged}
-                     value={this.state.firstName}
+                     onChange={this.onUpdateFirstName}
+                     value={this.props.customer.firstName}
                      autoFocus
         />
       </FormGroup>
@@ -71,8 +77,8 @@ export class Customer extends React.Component {
         <ControlLabel>Last name</ControlLabel>
         <FormControl type='text'
                      placeholder='Last name'
-                     onChange={this.handleLastNameChanged}
-                     value={this.state.lastName}
+                     onChange={this.onUpdateLastName}
+                     value={this.props.customer.lastName}
         />
       </FormGroup>
 
@@ -80,8 +86,8 @@ export class Customer extends React.Component {
         <ControlLabel>Street</ControlLabel>
         <FormControl type='text'
                      placeholder='Street'
-                     onChange={this.handleStreetChanged}
-                     value={this.state.street}
+                     onChange={this.onUpdateStreet}
+                     value={this.props.customer.street}
         />
       </FormGroup>
 
@@ -89,8 +95,8 @@ export class Customer extends React.Component {
         <ControlLabel>Zip Code</ControlLabel>
         <FormControl type='text'
                      placeholder='Zip code'
-                     onChange={this.handleZipCodeChanged}
-                     value={this.state.zipCode}
+                     onChange={this.onUpdateZipCode}
+                     value={this.props.customer.zipCode}
         />
       </FormGroup>
       
@@ -98,8 +104,8 @@ export class Customer extends React.Component {
         <ControlLabel>City</ControlLabel>
         <FormControl type='text'
                      placeholder='City'
-                     onChange={this.handleCityChanged}
-                     value={this.state.city}
+                     onChange={this.onUpdateCity}
+                     value={this.props.customer.city}
         />
       </FormGroup>
 
@@ -107,8 +113,8 @@ export class Customer extends React.Component {
         <ControlLabel>Country</ControlLabel>
         <FormControl type='text'
                      placeholder='Country'
-                     onChange={this.handleCountryChanged}
-                     value={this.state.country}
+                     onChange={this.onUpdateCountry}
+                     value={this.props.customer.country}
         />
       </FormGroup>
 

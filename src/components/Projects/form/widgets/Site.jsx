@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import update from 'react/lib/update'
 
 import Form from 'react-bootstrap/lib/Form'
 import FormGroup from 'react-bootstrap/lib/FormGroup'
@@ -11,7 +12,7 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon'
 type Props = {
   site: {},
   customer: {},
-  callback: Function
+  onUpdate: Function
 }
 
 export class Site extends React.Component {
@@ -20,43 +21,45 @@ export class Site extends React.Component {
   static propTypes = {
     site: PropTypes.object.isRequired,
     customer: PropTypes.object,
-    callback: PropTypes.func.isRequired
+    onUpdate: PropTypes.func.isRequired
   }
 
-  componentWillMount = () => {
-    console.log("SITE WILL MOUNT", this.props.site)
-    this.setState(this.props.site)
+  onUpdateStreet = (event) => {
+    const site = update(this.props.site, {
+      street: { $set: event.target.value }
+    })
+    this.props.onUpdate(site)
   }
 
-  handleChange = () => this.props.callback(this.state)
-
-  handleStreetChanged = (event) => {
-    this.setState({ street: event.target.value },
-                  this.handleChange)
+  onUpdateCity = (event) => {
+    const site = update(this.props.site, {
+      city: { $set: event.target.value }
+    })
+    this.props.onUpdate(site)
   }
 
-  handleCityChanged = (event) => {
-    this.setState({ city: event.target.value },
-                  this.handleChange)
+  onUpdateZipCode = (event) => {
+    const site = update(this.props.site, {
+      zipCode: { $set: event.target.value }
+    })
+    this.props.onUpdate(site)
   }
 
-  handleZipCodeChanged = (event) => {
-    this.setState({ zipCode: event.target.value },
-                  this.handleChange)
+  onUpdateCountry = (event) => {
+    const site = update(this.props.site, {
+      country: { $set: event.target.value }
+    })
+    this.props.onUpdate(site)
   }
 
-  handleCountryChanged = (event) => {
-    this.setState({ country: event.target.value },
-                  this.handleChange)
-  }
-
-  copyFromCustomer = () => {
-    this.setState({
+  onCopyFromCustomer = () => {
+    const site = Object.assign({}, {
       street: this.props.customer.street,
       city: this.props.customer.city,
       zipCode: this.props.customer.zipCode,
       country: this.props.customer.country
-    }, this.handleChange)
+    })
+    this.props.onUpdate(site)
   }
 
   render = () => (
@@ -64,7 +67,7 @@ export class Site extends React.Component {
 
       <FormGroup controlId='copy'>
         <Col smOffset={3} sm={9}>
-          <Button href='#' onClick={this.copyFromCustomer} bsClass="btn btn-success">
+          <Button href='#' onClick={this.onCopyFromCustomer} bsClass="btn btn-success">
             <Glyphicon glyph='forward' /> Copy from customer
           </Button>
         </Col>
@@ -74,8 +77,8 @@ export class Site extends React.Component {
         <ControlLabel>Street</ControlLabel>
         <FormControl type='text'
                      placeholder='Street'
-                     onChange={this.handleStreetChanged}
-                     value={this.state.street}
+                     onChange={this.onUpdateStreet}
+                     value={this.props.site.street}
                      autoFocus
         />
       </FormGroup>
@@ -84,8 +87,8 @@ export class Site extends React.Component {
         <ControlLabel>City</ControlLabel>
         <FormControl type='text'
                      placeholder='City'
-                     onChange={this.handleCityChanged}
-                     value={this.state.city}
+                     onChange={this.onUpdateCity}
+                     value={this.props.site.city}
         />
       </FormGroup>
 
@@ -93,8 +96,8 @@ export class Site extends React.Component {
         <ControlLabel>Zip Code</ControlLabel>
         <FormControl type='text'
                      placeholder='Zip code'
-                     onChange={this.handleZipCodeChanged}
-                     value={this.state.zipCode}
+                     onChange={this.onUpdateZipCode}
+                     value={this.props.site.zipCode}
         />
       </FormGroup>
 
@@ -102,8 +105,8 @@ export class Site extends React.Component {
         <ControlLabel>Country</ControlLabel>
         <FormControl type='text'
                      placeholder='Country'
-                     onChange={this.handleCountryChanged}
-                     value={this.state.country}
+                     onChange={this.onUpdateCountry}
+                     value={this.props.site.country}
         />
       </FormGroup>
       

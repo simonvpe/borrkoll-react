@@ -11,88 +11,58 @@ import ProjectForm from './form'
 // FlowType annotations
 type Props = {
   projects: array,
-  actions: {
-    insert: Function,
-    update: Function,
-    remove: Function
-  },
-  edit: {
-    project: object,
-    conflict: object,
-    error: string,
-    working: bool,
-    actions: {
-      start: Function,
-      cancel: Function,
-      submit: Function,
-      resolve: Function,
-      update: Function
-    }
-  },
-  factory: {
-    project: Function,
-    hole: Function,
-    note: Function
-  }
+  editProject: {},
+  onUpdate: Function,
+  onRemove: Function,
+  onEdit: Function,
+  onEditUpdate: Function,
+  onSubmit: Function,
+  onCancel: Function,
 }
 
 export class Projects extends React.Component {
   props: Props
 
   static propTypes = {
-    projects: PropTypes.arrayOf(shape.project).isRequired,
-    actions: PropTypes.shape({
-      insert: PropTypes.func.isRequired,
-      update: PropTypes.func.isRequired,
-      remove: PropTypes.func.isRequired
-    }),
-    edit: PropTypes.shape({
-      project: shape.project,
-      conflict: shape.project,
-      error: PropTypes.string,
-      working: PropTypes.bool.isRequired,
-      actions: PropTypes.shape({
-        start: PropTypes.func.isRequired,
-        cancel: PropTypes.func.isRequired,
-        submit: PropTypes.func.isRequired,
-        resolve: PropTypes.func.isRequired,
-        update: PropTypes.func.isRequired
-      })
-    }),
-    factory: PropTypes.shape({
-      project: Function,
-      hole: Function,
-      note: Function
-    })
+    projects: PropTypes.arrayOf(Object).isRequired,
+    editProject: PropTypes.object.isRequired,
+    onUpdate: PropTypes.func.isRequired,
+    onRemove: PropTypes.func.isRequired,
+    onEdit: PropTypes.func.isRequired,
+    onEditUpdate: PropTypes.func.isRequired,
+    onSave: PropTypes.func.isRequired,
+    onCancel: PropTypes.func.isRequired
   }
+
+  onRemove = (project) => () => this.props.onRemove(project._id)
+  onEdit = (project) => () => this.props.onEdit(project)
 
   render = () => {
     // Conditionally render <ProjectForm>
     let projectEdit
-    if (this.props.edit.project) {
+    if (this.props.editProject) {
       projectEdit = (
-        <ProjectForm project={this.props.edit.project}
-          saveCallback={this.props.edit.actions.submit}
-          cancelCallback={this.props.edit.actions.cancel}
-          createHole={this.props.factory.hole}
-          createNote={this.props.factory.note}
+        <ProjectForm
+            project={this.props.editProject}
+            onUpdate={this.props.onEditUpdate}
+            onSubmit={this.props.onSubmit}
+            onCancel={this.props.onCancel}
         />
       )
     }
-
     return (
       <div>
-        <ProjectListToolbar createCallback={this.props.edit.actions.start}/>
+        <ProjectListToolbar createCallback={this.props.onEdit}/>
         {projectEdit}
         <ProjectListHeader />
         {this.props.projects.map((project) => (
            <ProjectListItem
                key={project._id}
                project={project}
-               createNote={this.props.factory.note}
-               updateCallback={this.props.actions.update}
-               deleteCallback={this.props.actions.remove}
-               startEditingCallback={this.props.edit.actions.start}
+               onUpdate={this.props.onUpdate}
+               onRemove={this.onRemove(project)}
+               onEdit={this.onEdit(project)}
+
            />
          ))}
       </div>

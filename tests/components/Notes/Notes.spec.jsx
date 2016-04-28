@@ -11,7 +11,7 @@ describe('(Component) Notes', () => {
     let wrapper = shallow(<Notes notes={[]} onUpdate={spy()}/>)
     expect(wrapper.type()).to.equal('notes')
   })
-  
+
   it('Should render a text area.', () => {
     let wrapper = shallow(<Notes notes={[]} onUpdate={spy()}/>)
     expect(wrapper.find('#note-add-text')).to.exist
@@ -19,7 +19,8 @@ describe('(Component) Notes', () => {
 
   it('Should render a submit button.', () => {
     let wrapper = shallow(<Notes notes={[]} onUpdate={spy()}/>)
-    expect(wrapper.find('#note-add-button')).to.exist
+    const button = wrapper.find('#note-add-button')
+    expect(button).to.exist
   })
 
   it('Should render some notes.', () => {

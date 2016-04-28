@@ -43,7 +43,7 @@ describe('(Redux Module) Project edit', () => {
   it('Should export a constant PROJECT_EDIT_UPDATE.', () => {
     expect(PROJECT_EDIT_UPDATE).to.equal('PROJECT_EDIT_UPDATE')
   })
-  
+
   describe('(Action Creator) actions.start.', () => {
     it('Should be exported as a function.', () => {
       expect(actions.start).to.be.a('function')
@@ -61,10 +61,12 @@ describe('(Redux Module) Project edit', () => {
       expect(act).to.have.property('project').that.not.equals(project)
     })
 
-    it('Should throw if omitting argument or using wrong type.', () => {
-      expect(() => actions.start()).to.throw('Argument (project) must be an object!')
-      expect(() => actions.start('')).to.throw('Argument (project) must be an object!')
+    it('Should create a new project if passing no arguments.', () => {
+      const project = factory.project()
+      const act = actions.start()
+      expect(act).to.have.property('project').that.deep.equals(project)
     })
+
   })
 
   describe('(Action Creator) actions.update.', () => {
@@ -90,7 +92,6 @@ describe('(Redux Module) Project edit', () => {
     })
   })
 
-  
   describe('(Action Creator) actions.cancel', () => {
     it('Should be exported as a function.', () => {
       expect(actions.cancel).to.be.a('function')
@@ -263,9 +264,9 @@ describe('(Redux Module) Project edit', () => {
         const state1 = { working: true, project: project1 }
         const state2 = reducer(state1, { type: PROJECT_EDIT_UPDATE, project: project2 })
         expect(state2).to.equal(state1)
-      })      
+      })
     })
-    
+
     describe('(Handler) PROJECT_UPDATE', () => {
       it('Should return current state if recieved project is not the same as the curently editing one.', () => {
         const project1 = factory.project('1')
@@ -273,10 +274,10 @@ describe('(Redux Module) Project edit', () => {
 
         const state1 = { project: project1 }
         const state2 = reducer(state1, { type: PROJECT_UPDATE, project: project2 })
-        
+
         expect(state1).to.equal(state2)
       })
-      
+
       it('Should reset the "working" property.', () => {
         const project1 = factory.project('1')
         const project2 = factory.project('2')

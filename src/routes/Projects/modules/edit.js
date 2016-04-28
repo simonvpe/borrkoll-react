@@ -1,5 +1,5 @@
 import updateState from 'react/lib/update'
-
+import { factory } from './factory'
 import { PROJECT_INSERT, PROJECT_UPDATE } from './projects'
 
 export const PROJECT_EDIT_START = 'PROJECT_EDIT_START'
@@ -20,7 +20,7 @@ export function resolve (project) {
 
 export function start (project) {
   if (project === undefined || typeof project !== 'object') {
-    throw new Error('Argument (project) must be an object!')
+    project = factory.project()
   }
   return {
     type: PROJECT_EDIT_START,

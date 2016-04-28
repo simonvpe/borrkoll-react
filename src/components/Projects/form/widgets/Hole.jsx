@@ -1,5 +1,7 @@
 import React, { PropTypes } from 'react'
-import { shape } from 'routes/Projects/modules/factory'
+import update from 'react/lib/update'
+import { factory } from 'routes/Projects/modules/factory'
+
 import Notes from 'components/Notes'
 import Form from 'react-bootstrap/lib/Form'
 import FormGroup from 'react-bootstrap/lib/FormGroup'
@@ -12,50 +14,54 @@ type Props = {
   hole: {},
   onUpdate: Function, // (hole) => 
   onRemove: Function, // () =>
-  onUpdateNote: Function, // (noteIdx) => (note) =>
-  onRemoveNote: Function, // (noteIdx) => () =>
-  onAddNote: Function // (text) =>
+  onCreate: Function //
 }
 
 export class Hole extends React.Component {
   props: Props
 
   static propTypes = {
-    hole: shape.hole.isRequired,
-    onU: PropTypes.func.isRequired,
-    addHoleCallback: PropTypes.func.isRequired,
-    createNote: PropTypes.func.isRequired
+    hole: PropTypes.object.isRequired,
+    onUpdate: PropTypes.func.isRequired,
+    onRemove: PropTypes.func.isRequired,
+    onCreate: PropTypes.func.isRequired
   }
 
-  componentWillMount = () => {
-    console.log("HOLE WILL MOUNT")
-    this.setState(this.props.hole)
+  onUpdateType = (event) => {
+    const hole = update(this.props.hole, {
+      type: { $set: event.target.value }
+    })
+    this.props.onUpdate(hole)
   }
 
-  handleTypeChanged = (event) => {
-    this.setState({ type: event.target.value },
-                  () => this.props.callback(this.state))
+  onUpdateDepth = (event) => {
+    const hole = update(this.props.hole, {
+      depth: { $set: parseInt(event.target.value) }
+    })
+    this.props.onUpdate(hole)
   }
 
-  handleDepthChanged = (event) => {
-    this.setState({ depth: parseInt(event.target.value)},
-                  () => this.props.callback(this.state))
+  onUpdateNotes = (notes) => {
+    const hole = update(this.props.hole, {
+      notes: { $set: notes }
+    })
+    this.props.onUpdate(hole)
   }
 
-  submitNotes = (notes) => {
-    console.log("Recieved notes", notes)
-    this.setState({notes: notes},
-                  () => this.props.callback(this.state))
+  onRemove = (evt) => {
+    evt.preventDefault()
+    this.props.onRemove()
   }
 
   render = () => (
     <Form horizontal>
+      <Button onClick={this.onRemove}>Remove this hole</Button>
       <FormGroup controlId='type'>
         <ControlLabel>Type</ControlLabel>
         <FormControl type='text'
                      placeholder='Type'
-                     onChange={this.handleTypeChanged}
-                     value={this.state.type}
+                     onChange={this.onUpdateType}
+                     value={this.props.hole.type}
                      autoFocus
         />
       </FormGroup>
@@ -64,20 +70,19 @@ export class Hole extends React.Component {
         <ControlLabel>Depth</ControlLabel>
         <FormControl type='text'
                      placeholder='Depth'
-                     onChange={this.handleDepthChanged}
-                     value={this.state.depth}
+                     onChange={this.onUpdateDepth}
+                     value={this.props.hole.depth}
         />
       </FormGroup>
 
       <FormGroup controlId='notes'>
         <ControlLabel>Notes</ControlLabel>
-        <Notes notes={this.state.notes}
-               submitCallback={this.submitNotes}
-               createNote={this.props.createNote} />
+        <Notes notes={this.props.hole.notes}
+               onUpdate={this.onUpdateNotes} />
       </FormGroup>
 
       <FormGroup controlId='addAnother'>
-        <Button onClick={this.props.addHoleCallback} bsClass="btn btn-success">
+        <Button onClick={this.props.onCreate} bsClass="btn btn-success">
           <Glyphicon glyph='plus' /> Add another hole
         </Button>
       </FormGroup>

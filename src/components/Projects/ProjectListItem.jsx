@@ -1,58 +1,44 @@
 /* @flow */
 import React, { PropTypes } from 'react'
 import classes from './ProjectListItem.scss'
+import { shape } from 'routes/Projects/modules/factory'
 
 import Notes from 'components/Notes'
-import Panel from 'react-bootstrap/lib/Panel'
 import Table from 'react-bootstrap/lib/Table'
 import Col from 'react-bootstrap/lib/Col'
 import Collapse from 'react-bootstrap/lib/Collapse'
 import Glyphicon from 'react-bootstrap/lib/Glyphicon'
-import Button from 'react-bootstrap/lib/Button'
-import ButtonGroup from 'react-bootstrap/lib/ButtonGroup'
-import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar'
 import DropdownButton from 'react-bootstrap/lib/DropdownButton'
 import MenuItem from 'react-bootstrap/lib/MenuItem'
 
 type Props = {
   project: {},
-  createNote: Function,
-  updateCallback: Function,
-  startEditingCallback: PropTypes.func.isRequired,
-  deleteCallback: Function,
+  onUpdate: Function, // (project) =>
+  onEdit: PropTypes.func.isRequired, // () =>
+  onRemove: Function, // () =>
 }
 
 export class ProjectListItem extends React.Component {
   props: Props
 
   static propTypes = {
-    project: PropTypes.object.isRequired,
-    createNote: PropTypes.func.isRequired,
-    updateCallback: PropTypes.func.isRequired,
-    startEditingCallback: PropTypes.func.isRequired,
-    deleteCallback: PropTypes.func
+    project: shape.project,
+    onUpdate: PropTypes.func.isRequired,
+    onEdit: PropTypes.func.isRequired,
+    onRemove: PropTypes.func
   }
 
-  constructor(...args) {
-    // TODO Make componentWillMount instead
-    super(...args)
-    this.state = {}
+  componentWillMount() {
+    this.setState({})
   }
 
-  openPanel = () => {
+  onTogglePanel = () => {
     this.setState(Object.assign({}, this.state, { open: !this.state.open } ))
   }
 
-  submitNotes = (notes) => {
-    this.props.updateCallback(Object.assign(this.props.project, { notes: notes }))
-  }
-
-  deleteProject = () => {
-    this.props.deleteCallback(this.props.project._id)
-  }
-
-  editProject = () => {
-    this.props.startEditingCallback(this.props.project)
+  onUpdateNote = (notes) => {
+    const project = Object.assign({}, this.props.project, { notes })
+    this.props.onUpdate(project)
   }
 
   render = () => (
@@ -61,7 +47,7 @@ export class ProjectListItem extends React.Component {
         <Col xs={12} sm={1}>
           <Glyphicon
               glyph={this.state.open ? 'chevron-down' : 'chevron-right'}
-              onClick={this.openPanel.bind(this)}
+              onClick={this.onTogglePanel}
           />
           <strong className='visible-xs-inline pull-right'>{this.props.project._id}</strong>
         </Col>
@@ -90,10 +76,10 @@ export class ProjectListItem extends React.Component {
 
         <Col sm={2} xs={9}>
           <DropdownButton title='Actions' id='actions'>
-            <MenuItem eventKey='1' onClick={this.deleteProject.bind(this)}>
+            <MenuItem eventKey='1' onClick={this.props.onRemove}>
               <Glyphicon glyph='remove' /> Delete
             </MenuItem>
-            <MenuItem eventKey='2' onClick={this.editProject}>
+            <MenuItem eventKey='2' onClick={this.props.onEdit}>
               <Glyphicon glyph='edit' /> Edit
             </MenuItem>            
           </DropdownButton>
@@ -124,9 +110,7 @@ export class ProjectListItem extends React.Component {
             </tbody>
           </Table>
           <Notes notes={this.props.project.notes}
-                 createNote={this.props.createNote}
-                 submitCallback={this.submitNotes.bind(this)} />
-          
+                 onUpdate={this.onUpdateNote} />
         </Col>
       </Collapse>
     </div>

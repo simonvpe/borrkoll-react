@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react'
 import update from 'react/lib/update'
 import classes from './Note.scss'
-import { shape } from 'routes/Projects/modules/factory'
 import Media from 'react-bootstrap/lib/Media'
 import MediaLeft from 'react-bootstrap/lib/MediaLeft'
 import MediaBody from 'react-bootstrap/lib/MediaBody'
@@ -17,7 +16,7 @@ export class Note extends React.Component {
   props: Props
 
   static propTypes = {
-    note: shape.note.isRequired,
+    note: PropTypes.object.isRequired,
     onUpdate: PropTypes.func.isRequired,
     onRemove: PropTypes.func.isRequired
   }
@@ -48,11 +47,11 @@ export class Note extends React.Component {
     let removeButton
 
     if (this.state.editing) {
-      textArea = <textarea id='note-text' value={this.props.note.text} onChange={this.handleChange}/>
+      textArea = <textarea id='note-text' value={this.state.note.text} onChange={this.handleChange}/>
       saveButton = <button id='save-button' onClick={this.handleSave}>Save</button>
     } else {
       textParagraph = <p id='note-text'>{this.props.note.text}</p>
-      editButton = <button id='edit-button' onClick={this.setEditing}>Remove</button>
+      editButton = <button id='edit-button' onClick={this.setEditing}>Edit</button>
       removeButton = <button id='remove-button' onClick={this.props.onRemove}>Remove</button>
     }
 

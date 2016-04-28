@@ -10,15 +10,14 @@ import ModalBody from 'react-bootstrap/lib/ModalBody'
 import ModalFooter from 'react-bootstrap/lib/ModalFooter'
 
 import { Multistep } from './Multistep'
-
 import { Customer, Site, Hole, Save } from './widgets'
+import { factory } from 'routes/Projects/modules/factory'
 
 type Props = {
   project: {},
-  saveCallback: Function,
-  cancelCallback: Function,
-  createHole: Function,
-  createNote: Function
+  onSubmit: Function,
+  onCancel: Function,
+  onUpdate: Function
 }
 
 export class ProjectForm extends React.Component {
@@ -26,77 +25,82 @@ export class ProjectForm extends React.Component {
 
   static propTypes = {
     project: PropTypes.object,
-    saveCallback: PropTypes.func.isRequired,
-    cancelCallback: PropTypes.func.isRequired,
-    createHole: PropTypes.func.isRequired,
-    createNote: PropTypes.func.isRequired
+    onSubmit: PropTypes.func.isRequired,
+    onCancel: PropTypes.func.isRequired,
+    onUpdate: PropTypes.func.isRequired
   }
 
-  componentWillMount = () => {
-    this.setState(this.props.project)
-  }
-
-  customerCallback = (customer) => {
-    this.setState(update(this.state, {
+  onUpdateCustomer = (customer) => {
+    const project = update(this.props.project, {
       customer: { $set: customer }
-    }))
+    })
+    this.props.onUpdate(project)
   }
 
-  siteCallback = (site) => {
-    this.setState(update(this.state, {
+  onUpdateSite = (site) => {
+    const project = update(this.props.project, {
       site: { $set: site }
-    }))
+    })
+    this.props.onUpdate(project)
   }
 
-  addHoleCallback = () => {
-    this.setState(update(this.state, {
+  onRemoveHole = (idx) => () => {
+    const project = update(this.props.project, {
       holes: {
-        $push: [this.props.createHole()]
+        $set: this.props.project.holes.filter((h,i) => (i !== idx))
       }
-    }))
+    })
+    this.props.onUpdate(project)
   }
 
-  holeCallback = (idx) => (hole) => {
-    console.log(idx, hole, this.state)
-    this.setState({
-      holes: this.state.holes.map((h, i) => (i === idx ? hole : h))
-    }, () => console.log(this.state))
+  onCreateHole = () => {
+    const project = update(this.props.project, {
+      holes: {
+        $push: [factory.hole()]
+      }
+    })
+    this.props.onUpdate(project)
   }
 
-  saveCallback = () => this.props.saveCallback(this.state)
+  onUpdateHole = (idx) => (hole) => {
+    const project = update(this.props.project, {
+      holes: {
+        $set: this.props.project.holes.map((h, i) => (i === idx ? hole : h))
+      }
+    })
+    this.props.onUpdate(project)
+  }
 
   render = () => {
     let steps = [
       {
         name: 'Customer',
         component: (
-          <Customer customer={this.state.customer}
-                    callback={this.customerCallback}/>
+          <Customer customer={this.props.project.customer}
+                    onUpdate={this.onUpdateCustomer}/>
         )
       },
       {
         name: 'Site',
         component: (
-          <Site site={this.state.site}
-                callback={this.siteCallback}
-                customer={this.state.customer}/>
+          <Site site={this.props.project.site}
+                onUpdate={this.onUpdateSite}
+                customer={this.props.project.customer}/>
         )
       }
     ]
 
     // Calculate which steps to push based on the number of holes.
     // We assign random keys and pray for no collisions
-    let id = () => Math.floor(Math.random() * 1000000)
-    this.state.holes.map((hole, idx) => {
+    this.props.project.holes.map((hole, idx) => {
       steps.push({
         name: "Hole #" + (idx + 1).toString(),
         component: (
           <Hole hole={hole}
-            index={id()}
-            addHoleCallback={this.addHoleCallback}
-            callback={this.holeCallback(idx)}
-            createNote={this.props.createNote}
-            key={idx}
+                onCreate={this.onCreateHole}
+                onUpdate={this.onUpdateHole(idx)}
+                onRemove={this.onRemoveHole(idx)}
+                key={idx}
           />
         )
       })
@@ -105,13 +109,11 @@ export class ProjectForm extends React.Component {
     // Also put the "Finished" step at the end
     steps.push({
       name: 'Finished',
-      component: <Save callback={this.saveCallback} />
+      component: <Save onSubmit={this.props.onSubmit} />
     })
 
-    //let show = Object.keys(this.props.project).length > 0
-
     return (
-      <Modal show={true} onHide={this.props.cancelCallback}>
+      <Modal show={true} onHide={this.props.onCancel}>
         <Modal.Header closeButton>
           <Modal.Title>
           </Modal.Title>

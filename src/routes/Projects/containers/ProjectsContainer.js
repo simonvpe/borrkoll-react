@@ -18,58 +18,19 @@ import Projects from 'components/Projects'
 const mapActionCreators = {
 //  increment: () => increment(1),
   //  doubleAsync
-  insertProject: (project) => projectsActions.insert(project),
-  updateProject: (project) => projectsActions.update(project),
-  removeProject: (id) => projectsActions.remove(id),
-  editProjectStart: (project) => editProjectActions.start(project),
-  editProjectCancel: () => editProjectActions.cancel(),
-  editProjectSubmit: () => editProjectActions.submit(),
-  editProjectResolve: (project) => editProjectActions.resolve(project),
-  editProjectUpdate: (project) => editProjectActions.update(project)
+  onUpdate: projectsActions.update,
+  onRemove: projectsActions.remove,
+  onEdit: editProjectActions.start,
+  onEditUpdate: editProjectActions.update,
+  onSubmit: editProjectActions.submit,
+  onCancel: editProjectActions.cancel
 }
 
 const mapStateToProps = (state) => {
   return {
     projects: state.projects.projects,
-    editProject: state.editProject
+    editProject: state.editProject.project
   }
 }
 
-const mergeProps = (stateProps, dispatchProps, ownProps) => ({
-  projects: stateProps.projects,
-  actions: {
-    insert: dispatchProps.insertProject,
-    update: dispatchProps.updateProject,
-    remove: dispatchProps.removeProject,
-  },
-  edit: Object.assign({}, stateProps.editProject, {
-    actions: {
-      start: () => dispatchProps.editProjectStart(factory.project()),
-      cancel: dispatchProps.editProjectCancel,
-      submit: dispatchProps.editProjectSubmit,
-      resolve: dispatchProps.editProjectResolve,
-      update: dispatchProps.editProjectUpdate
-    }
-  }),
-  factory: {
-    project: factory.project,
-    hole: factory.hole,
-    note: factory.note
-  }
-})
-
-/*  Note: mapStateToProps is where you should use `reselect` to create selectors, ie:
-
-    import { createSelector } from 'reselect'
-    const counter = (state) => state.counter
-    const tripleCount = createSelector(counter, (count) => count * 3)
-    const mapStateToProps = (state) => ({
-      counter: tripleCount(state)
-    })
-
-    Selectors can compute derived data, allowing Redux to store the minimal possible state.
-    Selectors are efficient. A selector is not recomputed unless one of its arguments change.
-    Selectors are composable. They can be used as input to other selectors.
-    https://github.com/reactjs/reselect    */
-
-export default connect(mapStateToProps, mapActionCreators, mergeProps)(Projects)
+export default connect(mapStateToProps, mapActionCreators)(Projects)
