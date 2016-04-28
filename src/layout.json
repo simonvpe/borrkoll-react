@@ -1,213 +1,192 @@
 {
-    "ProjectsContainer": {
-	"in": {
+  "ProjectsContainer": {
+	  "in": {
 	    "projects: []": "projects",
 	    "actions": {
-		"insert: function(project)": "actions.insert",
-		"update: function(project)": "actions.update",
-		"remove: function(id)": "actions.remove"
+		    "insert: function(project)": "actions.insert",
+		    "update: function(project)": "actions.update",
+		    "remove: function(id)": "actions.remove"
 	    },
 	    "factory": {
-		"project: function()": "factory.project",
-		"hole: function()": "factory.hole",
-		"note: function()": "factory.note"
+		    "project: function()": "factory.project",
+		    "hole: function()": "factory.hole",
+		    "note: function()": "factory.note"
 	    }
-	},
-	"out": {
+	  },
+	  "out": {
 	    "projects: []": "projects",
 	    "onRemove: function(project)": "(project) => () => actions.remove(project._id)",
 	    "setNotes: function(project)": "(project) => (notes) => actions.update( React.update(project, { notes: { $set: notes } }) )",
 	    "setCompleted: function(completed)": "(project) => (completed) => actions.update( ..."
-	},
-	"Toolbar": {
+	  },
+	  "Toolbar": {
 	    "in": {
-		"onAddProject": "edit.actions.add"
+		    "onAddProject": "edit.actions.add"
 	    }
-	},
-	"ProjectListHeader": {
-	},
-	"ProjectListItem[i]": {
+	  },
+	  "ProjectListHeader": {
+	  },
+	  "ProjectListItem[i]": {
 	    "in": {
-		"project: []": "projects[i]",
-		"onRemove: function()": "remove(projects[i])",
-		"setNotes: function(notes)": "setNotes(projects[i])",
-		"setCompleted: function(completed)": "setCompleted(projects[i])"
+		    "project: []": "projects[i]",
+		    "onRemove: function()": "remove(projects[i])",
+		    "setNotes: function(notes)": "setNotes(projects[i])",
+		    "setCompleted: function(completed)": "setCompleted(projects[i])"
 	    },
 	    "checkbox": {
-		"in": {
-		    "onValueChanged": "setCompleted(value)"
-		}
+		    "in": {
+		      "onValueChanged": "setCompleted(value)"
+		    }
 	    },
 	    "NotesContainer": {
-		"in": {
-		    "notes: []": "",
-		    "onUpdate: function(notes)": "setNotes"
-		},
-		"out": {
-		    "notes: []": "notes",
-		    "onAdd": "(text) => onUpdate(notes.concat(Object.assign(factory.note(), { text })))",
-		    "onUpdate: function(idx)": "(idx) => (note) => onUpdate( React.update( ... ) )",
-		    "onRemove: function(idx)": "(idx) => () => onUpdate( React.update( ... ) )"
-		},
-		"Notes": {
 		    "in": {
-			"notes: []": "notes",
-			"onAdd: function(text)": "onAdd",
-			"onUpdate: function(idx)": "onUpdate",
-			"onRemove": "onRemove"
+		      "notes: []": "",
+		      "onUpdate: function(notes)": "setNotes"
 		    },
-		    "Note[i]": {
-			"in": {
-			    "key": "i",
-			    "note: note": "notes[i]",
-			    "onUpdate: function(note)": "onUpdate(i)",
-			    "onRemove: function()": "onRemove(i)"
-			}
+		    "out": {
+		      "notes: []": "notes",
+		      "onAdd": "(text) => onUpdate(notes.concat(Object.assign(factory.note(), { text })))",
+		      "onUpdate: function(idx)": "(idx) => (note) => onUpdate( React.update( ... ) )",
+		      "onRemove: function(idx)": "(idx) => () => onUpdate( React.update( ... ) )"
 		    },
-		    "textarea": {
-		    },
-		    "Button": {
-			"in": {
-			    "onClick": "submit"
-			}
+		    "Notes": {
+		      "in": {
+			      "notes: []": "notes",
+			      "onAdd: function(text)": "onAdd",
+			      "onUpdate: function(idx)": "onUpdate",
+			      "onRemove": "onRemove"
+		      },
+		      "Note[i]": {
+			      "in": {
+			        "key": "i",
+			        "note: note": "notes[i]",
+			        "onUpdate: function(note)": "onUpdate(i)",
+			        "onRemove: function()": "onRemove(i)"
+			      }
+		      },
+		      "textarea": {
+		      },
+		      "Button": {
+			      "in": {
+			        "onClick": "submit"
+			      }
+		      }
 		    }
-		}
 	    }
 	    
-	},
-	"ProjectFormContainer": {
+	  },
+	  "ProjectFormContainer": {
 	    "in": {
-		"edit": {
-		    "project": "edit.project",
-		    "conflict": "edit.conflict",
-		    "error": "edit.error",
-		    "working": "edit.working",
-		    "actions": {
-			"start": "edit.actions.start",
-			"cancel": "edit.actions.cancel",
-			"submit": "edit.actions.submit",
-			"resolve": "edit.actions.resolve",
-			"update": "edit.actions.update"
+		    "edit": {
+		      "project": "edit.project",
+		      "conflict": "edit.conflict",
+		      "error": "edit.error",
+		      "working": "edit.working",
+		      "actions": {
+			      "start": "edit.actions.start",
+			      "cancel": "edit.actions.cancel",
+			      "submit": "edit.actions.submit",
+			      "resolve": "edit.actions.resolve",
+			      "update": "edit.actions.update"
+		      }
 		    }
-		}
 	    },
 	    "out": {
-		"onSubmit": "edit.actions.submit",
-		"setCustomer": "(customer) => onUpdate( React.update(project, { customer: { $set: customer } }) )",
-		"setSite": "(site) => onUpdate( React.update(project, { site: { $set: site } }) )",
-		"setNotes": "(notes) => onUpdate( React.update(project, { notes: { $set: notes } }) )",
-		"setHoles": "(holes) => onUpdate( React.update(project, { holes: { $set: holes } }) )",
-		"setCompleted": "(completed) => onUpdate( React.update(project, { completed: { $set: completed } }) )"
+		    "onSubmit": "edit.actions.submit",
+		    "setCustomer": "(customer) => onUpdate( React.update(project, { customer: { $set: customer } }) )",
+		    "setSite": "(site) => onUpdate( React.update(project, { site: { $set: site } }) )",
+		    "setNotes": "(notes) => onUpdate( React.update(project, { notes: { $set: notes } }) )",
+		    "setHoles": "(holes) => onUpdate( React.update(project, { holes: { $set: holes } }) )",
+		    "setCompleted": "(completed) => onUpdate( React.update(project, { completed: { $set: completed } }) )"
 	    },
 	    "ProjectForm": {
-		"in": "{...props}",
-		"Header": {
-		    "in": {
-			"conflict": "conflict",
-			"error": ""
-		    }
-		},
-		"Customer": {
-		    "in": {
-			"customer: {}": "project.customer",
-			"onUpdate: function(customer)": "setCustomer"
-		    }
-		},
-		"Site": {
-		    "in": {
-			"site: {}": "project.site",
-			"onUpdate: function(site)": "setSite"
-		    }
-		},
-		"HolesContainer": {
-		    "in": {
-			"holes: []": "project.holes",
-			"onUpdate: function(holes)": "setHoles"
+		    "in": "{...props}",
+		    "Header": {
+		      "in": {
+			      "conflict": "conflict",
+			      "error": ""
+		      }
 		    },
-		    "out": {
-			"holes: []": "holes",
-			"onAdd: function()": "() => onUpdate( holes.concat(factory.hole() )",
-			"onUpdate: function(idx)": "(idx) => (hole) => onUpdate( React.update( ... ) )",
-			"onRemove: function(idx)": "(idx) => () => onUpdate( React.update( ... ) )",
-			"setNotes: function(idx)": "(idx) => (notes) => onUpdate( React.update( ... ) )"
+		    "Customer": {
+		      "in": {
+			      "customer: {}": "project.customer",
+			      "onUpdate: function(customer)": "setCustomer"
+		      }
+		    },
+		    "Site": {
+		      "in": {
+			      "site: {}": "project.site",
+			      "onUpdate: function(site)": "setSite"
+		      }
 		    },
 		    "Holes": {
-			"in": {
-			    "holes: []": "holes",
-			    "onAdd: function()": "onAdd",
-			    "onUpdate: function(idx)": "onUpdate",
-			    "onRemove: function(idx)": "onRemove",
-			    "setNotes: function(idx)": "setNotes"
-			},
-			"Hole[i]": {
 			    "in": {
-				"key": "i",
-				"hole: hole": "holes[i]",
-				"onUpdate: function(hole)": "onUpdate(i)",
-				"onRemove: function()": "onRemove(i)",
-				"setNotes: function(notes)": "setNotes(i)"
+			      "holes: []": "holes",
+			      "onAdd: function()": "onAddHole",
+			      "onUpdateHole: function(holeIdx)": "onUpdateHole",
+			      "onRemoveHole: function(holeIdx)": "onRemoveHole",
+            "onAddHoleNote: function(holeIdx)": "onAddHoleNote",
+			      "onUpdateHoleNote: function(holeIdx)": "onUpdateHoleNote",
+            "onRemoveHoleNote: function(holeIdx)": "onRemoveHoleNote"
 			    },
-			    "NotesContainer": {
-				"in": {
-				    "notes: []": "hole.notes",
-				    "onUpdate: function(notes)": "setNotes"
-				},
-				"out": {
-				    "notes: []": "notes",
-				    "onAdd": "(text) => onUpdate(notes.concat(Object.assign(factory.note(), { text })))",
-				    "onUpdate: function(idx)": "(idx) => (note) => onUpdate( React.update( ... ) )",
-				    "onRemove: function(idx)": "(idx) => () => onUpdate( React.update( ... ) )"
-				},
-				"Notes": {
-				    "in": {
-					"notes: []": "notes",
-					"onAdd: function(text)": "onAdd",
-					"onUpdate: function(idx)": "onUpdate",
-					"onRemove": "onRemove"
-				    },
-				    "Note[i]": {
-					"in": {
-					    "key": "i",
-					    "note: note": "notes[i]",
-					    "onUpdate: function(note)": "onUpdate(i)",
-					    "onRemove: function()": "onRemove(i)"
-					}
-				    },
-				    "textarea": {
-				    },
-				    "Button": {
-					"in": {
-					    "onClick": "submit"
-					}
-				    }
-				}
-				
+			    "Hole[holeIdx]": {
+			      "in": {
+				      "key": "i",
+				      "hole: hole": "holes[holeIdx]",
+				      "onUpdate: function(hole)": "onUpdateHole(holeIdx)",
+				      "onRemove: function()": "onRemoveHole(holeIdx)",
+              "onAddNote: function(text)": "onAddHoleNote(holeIdx)",
+				      "onUpdateNote: function(noteIdx)": "onUpdateHoleNote(holeIdx)",
+              "onRemoveNote: function(noteIdx)": "onRemoveHoleNote(holeIdx)"
+			      },
+				    "Notes": {
+				      "in": {
+					      "notes: []": "notes",
+					      "onAdd: function(text)": "onAdd",
+					      "onUpdate: function(idx)": "onUpdate",
+					      "onRemove": "onRemove"
+				      },
+				      "Note[i]": {
+					      "in": {
+					        "key": "i",
+					        "note: note": "notes[i]",
+					        "onUpdate: function(note)": "onUpdate(i)",
+					        "onRemove: function()": "onRemove(i)"
+					      }
+				      },
+				      "textarea": {
+				      },
+				      "Button": {
+					      "in": {
+					        "onClick": "submit"
+					      }
+				      }
+			      }
 			    }
-			}
 		    }
-		},
-		"FinishContainer": {
+		  },
+		  "FinishContainer": {
 		    "in": {
-			"project: {}": "project",
-			"onUpdate: function(project)": "onUpdate",
-			"onSubmit: function()": "onSubmit"
-		    },
-		    "out": {
-			"project: {}": "project",
-			"onSubmit: function()": "onSubmit",
-			"setNotes": "(notes) => onUpdate( React.update(project, { notes: { $set: notes } }) )"
-		    },
-		    "Finish": {
-			"in": {
 			    "project: {}": "project",
-			    "onSubmit: function()": "onSubmit",
-			    "setNotes: function(notes)": "setNotes"
-			},
-			"NotesContainer": { "notes": "project.notes", "onUpdate": "setNotes" },
-			"Button": { "onClick": "onSubmit" }
+			      "onUpdate: function(project)": "onUpdate",
+			      "onSubmit: function()": "onSubmit"
+		      },
+		      "out": {
+			      "project: {}": "project",
+			      "onSubmit: function()": "onSubmit",
+			      "setNotes": "(notes) => onUpdate( React.update(project, { notes: { $set: notes } }) )"
+		      },
+		      "Finish": {
+			      "in": {
+			        "project: {}": "project",
+			        "onSubmit: function()": "onSubmit",
+			        "setNotes: function(notes)": "setNotes"
+			      },
+			      "NotesContainer": { "notes": "project.notes", "onUpdate": "setNotes" },
+			      "Button": { "onClick": "onSubmit" }
+		      }
 		    }
-		}
 	    }
-	}
-    }
+	  }
+  }
 }

@@ -1,109 +1,81 @@
 /* @flow */
 import React, { PropTypes } from 'react'
 import classes from './Notes.scss'
+import { Note } from './Note'
+import { shape, factory } from 'routes/Projects/modules/factory'
 
-import Well from 'react-bootstrap/lib/Well'
-import FormControl from 'react-bootstrap/lib/FormControl'
-import Media from 'react-bootstrap/lib/Media'
-import MediaLeft from 'react-bootstrap/lib/MediaLeft'
-import MediaBody from 'react-bootstrap/lib/MediaBody'
-import MediaHeading from 'react-bootstrap/lib/MediaHeading'
-import Form from 'react-bootstrap/lib/Form'
-import FormGroup from 'react-bootstrap/lib/FormGroup'
 import Button from 'react-bootstrap/lib/Button'
 
 // FlowType annotations
 type Props = {
   notes: [],
-  createNote: Function,
-  submitCallback: Function,
-
+  onUpdate: Function, // (notes)
 }
 
 export class Notes extends React.Component {
   props: Props
 
   static propTypes = {
-    notes: PropTypes.array.isRequired,
-    createNote: PropTypes.func.isRequired,
-    submitCallback: PropTypes.func.isRequired
+    notes: PropTypes.arrayOf(shape.note).isRequired,
+    onUpdate: PropTypes.func.isRequired,
   }
 
-  componentWillMount = () => {
-    console.log("NOTES WILL MOUNT", this.props.notes)
-    this.setState({
-      text: '',
-      valid: false,
-      notes: this.props.notes
-    })
+  componentWillMount() {
+    this.setState({ text: '' })
   }
 
-  handleChange = (e) => {
-    this.setState({
-      text: e.target.value,
-      valid: this.state.text.length > 5
-    })
+  handleChange = (evt) => {
+    this.setState({ text: evt.target.value })
   }
 
-  submitNote = () => {
-    if (this.state.valid) {
-      let notes = this.state.notes.concat(Object.assign(this.props.createNote(), {text: this.state.text}))
-      this.setState({notes}, () => this.props.submitCallback(notes))
-    }
+  handleSave = () => {
+    const note = Object.assign(factory.note(), { text: this.state.text })
+    const notes = this.props.notes.concat(note)
+    this.props.onUpdate(notes)
+    this.setState({ text: '' })
   }
 
-  renderForm = () => (
-    <div>
-      <textarea
-        className={classes.commentTextarea}
-        type='text'
-        placeholder='Add notes (press Enter to save) ...'
-        onChange={this.handleChange}
-        value={this.state.text}
-     />
-      <Button onClick={this.submitNote} bsClass='btn btn-success'>Add comment</Button>
-    </div>
-  )
+  handleNoteUpdate = (noteIdx) => (note) => {
+    const notes = this.props.notes.map( (n, i) => (i == noteIdx ? note : n) )
+    this.props.onUpdate(notes)
+  }
 
-  renderNotes = () => {
-    if (this.state.notes.length > 0) {
-      return this.state.notes.map((note, idx) => (
-        <Media key={idx}>
-          <Media.Left>
-            <img src='http://lorempixel.com/50/50/people/6'/>
-          </Media.Left>
-          <Media.Body>
-            <Media.Heading className={classes.noteHeading}>
-              Username
-            </Media.Heading>
-            <p className={classes.noteContent}>
-              {note.text}
-            </p>
-            <p className={classes.noteTimestamp}>
-              {note.timestamp}
-            </p>
-          </Media.Body>
-        </Media>
+  handleNoteRemoval = (noteIdx) => () => {
+    const notes = this.props.notes.filter((note, idx) => (noteIdx != idx))
+    this.props.onUpdate(notes)
+  }
+
+  render = () => {
+    let notes
+    let instruction
+
+    if (this.props.notes.length > 0) {
+      notes = this.props.notes.map((note, idx) => (
+        <Note key={idx}
+              note={note}
+              onUpdate={this.handleNoteUpdate(idx)}
+              onRemove={this.handleNoteRemoval(idx)}/>
       ))
     } else {
-      return (
-        <Media>
-          <Media.Body>
-            <p className={classes.noteContent}>
-              There are no notes to display. You can add one now
-            </p>
-          </Media.Body>
-        </Media>
-      )
+      instruction = <p id='note-add-instruction'>There are no notes yet...</p>
     }
-  }
 
-  render = () => (
-    <div>
-      {this.renderNotes()}
-      {this.renderForm()}
-    </div>
-	)
+    return (
+      <notes>
+        {instruction}
+        {notes}
+        <textarea
+            id='note-add-text'
+            className={classes.commentTextarea}
+            type='text'
+            placeholder='Add notes (press Enter to save) ...'
+            onChange={this.handleChange}
+            value={this.state.text}
+        />
+        <Button id='note-add-button' onClick={this.handleSave} bsClass='btn btn-success'>Add comment</Button>        
+      </notes>
+    )
+  }
 }
 
 export default Notes

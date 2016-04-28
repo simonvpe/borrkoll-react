@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-
+import { shape } from 'routes/Projects/modules/factory'
 import Notes from 'components/Notes'
 import Form from 'react-bootstrap/lib/Form'
 import FormGroup from 'react-bootstrap/lib/FormGroup'
@@ -10,17 +10,19 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon'
 
 type Props = {
   hole: {},
-  callback: Function,
-  addHoleCallback: Function,
-  createNote: Function
+  onUpdate: Function, // (hole) => 
+  onRemove: Function, // () =>
+  onUpdateNote: Function, // (noteIdx) => (note) =>
+  onRemoveNote: Function, // (noteIdx) => () =>
+  onAddNote: Function // (text) =>
 }
 
 export class Hole extends React.Component {
   props: Props
 
   static propTypes = {
-    hole: PropTypes.object.isRequired,
-    callback: PropTypes.func.isRequired,
+    hole: shape.hole.isRequired,
+    onU: PropTypes.func.isRequired,
     addHoleCallback: PropTypes.func.isRequired,
     createNote: PropTypes.func.isRequired
   }
